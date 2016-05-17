@@ -1,15 +1,16 @@
 (ns genetic.ui
   (:require [seesaw.core :refer :all]
+            [seesaw.swingx :refer [hyperlink]]
             [seesaw.border :refer :all])) 
 
 (defn make-ui
   []
   (frame 
-    :title "Game of Life" 
-    :size [500 :by 500]
+    :title "Genetic Algorithm Example" 
+    :size [1000 :by 1000]
     :content (border-panel
                :border 5 :hgap 5 :vgap 5
-               :north  "LOL, I stole this!"
+               :north  (hyperlink :text "Link to example" :uri "http://www.ai-junkie.com/ga/intro/gat1.html")
                :center (canvas :id :canvas 
                                :background :black
                                :border (line-border :thickness 2 :color :black))
@@ -32,4 +33,4 @@
 
 (defn show-ui
   [frame]
-  (-> frame pack! show!))
+  (-> frame show!))
