@@ -1,4 +1,5 @@
-(ns genetic.impl)
+(ns genetic.impl
+  (:require [clojure.pprint :refer [cl-format]]))
 
 (defn random-chromosome
   "Produces a random vector of bits"
@@ -7,6 +8,8 @@
          (take n (repeatedly #(rand-int 2)))))
 
 (defn init
-  "Returns a map with all the initial chromosomes. Chromosome count is n, chromosome length is l"
+  "Returns a map with all the initial chromosomes. N is chomosome count, L is chromosome length"
   [n l]
   (loop [n l]))
+
+(load "impl_encoding")

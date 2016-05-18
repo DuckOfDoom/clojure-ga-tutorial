@@ -1,5 +1,6 @@
 (ns genetic.core
-  (:require [genetic.ui :as ui])
+  (:require [genetic.ui :as ui]
+            [genetic.impl :as impl])
   (:gen-class
     :main main))
 
