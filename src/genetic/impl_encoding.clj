@@ -33,12 +33,13 @@
       nil
       decoded)))
 
-;;(defn decode-chromosome
-;;  "Decodes a string of bits into an string containing expression. If something doesn't conform to the operator"
-;;  [bits]
-;;  (loop [remaining bits
-;;         converted '()]
-;;    (if (-> (count remaining) (<= 4))
-;;      ()))
-;;    )
-;;
+(defn decode-chromosome
+  "Decodes a string of bits into an string containing expression. 
+  Bits should conform to order 'symbol-operator-symbol-e.t.c' or they will be dropped"
+  [bits]
+  (loop [remaining bits
+         converted []]
+    (if (-> (count remaining) (<= 4))
+      ()))
+  )
+

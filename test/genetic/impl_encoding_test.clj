@@ -8,6 +8,12 @@
 
 (deftest int-to-bits-test
   (testing "Converts integer to vector of bits"
-    (is (-> (int-to-bits 14) (= [1 1 1 0]))))
-  (testing "Returns nil when fails."
-    (is (-> (int-to-bits ) (= nil)))))
+    (is (-> (int-to-bits 14) (= [1 1 1 0])))))
+
+(deftest bits-to-int-test
+  (testing "Converts vector of bits to int"
+    (is (-> (bits-to-int [1 1 1 0]) (= 14)))) )
+
+(deftest decode-gene-test
+  (testing "Decodes gene of 4 bits into a number."
+    (is (-> (bits-to-int [0 1 0 1]) (= 5)))) )
