@@ -16,4 +16,10 @@
 
 (deftest decode-gene-test
   (testing "Decodes gene of 4 bits into a number."
-    (is (-> (bits-to-int [0 1 0 1]) (= 5)))) )
+    (is (-> (decode-gene [0 1 0 1]) (= "5")))) 
+  (testing "Decodes gene of 4 bits into an operator sign."
+    (is (-> (decode-gene [1 1 0 1]) (= "*")))) 
+  (testing "Returns nil if not enough bits"
+    (is (-> (decode-gene [0 1 1]) nil?)))
+  (testing "Returns nil if number is too large"
+    (is (-> (decode-gene [1 1 1 1]) nil?)))) 
