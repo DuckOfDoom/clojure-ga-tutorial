@@ -31,32 +31,43 @@
                   (bits-to-int bits))]
     (cond 
       ;; Can't decode something that is greater than our table
-      (or (-> decoded nil?) (-> (decoded (> (first (last operators)))))) nil
+      (or (-> decoded nil?)
+          (-> decoded (> (first (last operators))))) nil
       ;; If > 9 then it's an operator
-      (-> (decoded (>= 2r1010))) (operators decoded)
+      (-> decoded (>= 2r1010)) (operators decoded)
       ;; Else it's just a number
       :else
       (str decoded))))
 
 (defn operator?
   "Returns whether the character is an operator"
-  [i]
-  (and (>= i 2r1010) (<= i 2r1101)))
+  [c]
+  (some? (some #{c} (vals operators))))
+
+(defn to-expression
+  "Converts a vector of strings to expression that we're going to feed to compiler later.
+  Removes trailing operators and joins with whitespaces."
+  [input]
+  (let [s (clojure.string/join " " input)]
+    (if (-> s last str operator?)
+      (-> (subs s 0 (-> (count s) (- 1))) clojure.string/trim)
+      s)))
 
 (defn decode-chromosome
   "Decodes the a vector of bits into expression string. 
   Values that do not conform to 'number-operator-number-operator-number-e.t.c' order are dropped."
   [input]
   (loop [remaining input
-         decoded []
-          ;; flag that previous character was an operator. set to 'true' because sequence starts with a number
-         was-operator true]  
-    (let [current (decode-gene (take 4 input))
-          is-operator (operator? current)]
+         ;; flag that previous character was an operator. set to 'true' because sequence starts with a number
+         was-operator true   
+         decoded []]
+    (let [current (decode-gene (take 4 remaining))
+          is-operator (operator? current)
+          left (drop 4 remaining)]
       (cond 
-        ;; if we can't decode next char - returning what we have
-        (nil? current) decoded
+        ;; if we can't decode next char - return what we have and clean last operator
+        (or (-> current nil?)) (to-expression decoded)
         ;; if symbol conforms to our expression - recur with new values
-        (not= is-operator was-operator) (recur (drop 4 input) (conj decoded current) is-operator) 
-        :else
-        (recur (drop 4 input) decoded was-operator)))))
+        (-> is-operator (not= was-operator)) (recur left is-operator (conj decoded current))
+        :else 
+        (recur left was-operator decoded)))))

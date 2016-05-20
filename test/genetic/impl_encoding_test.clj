@@ -15,11 +15,24 @@
     (is (-> (bits-to-int [1 1 1 0]) (= 14)))) )
 
 (deftest decode-gene-test
+  "Trying to decode a single gene"
   (testing "Decodes gene of 4 bits into a number."
     (is (-> (decode-gene [0 1 0 1]) (= "5")))) 
   (testing "Decodes gene of 4 bits into an operator sign."
     (is (-> (decode-gene [1 1 0 1]) (= "*")))) 
   (testing "Returns nil if not enough bits"
-    (is (-> (decode-gene [0 1 1]) nil?)))
+    (is (-> (decode-gene [0 1 1]) nil?))
+    (is (-> (decode-gene '()) nil?)))
+  (is (-> (decode-gene []) nil?)) 
   (testing "Returns nil if number is too large"
     (is (-> (decode-gene [1 1 1 1]) nil?)))) 
+
+(deftest decode-chromosome-test
+  "Trying to decode the whole chromosome"
+  (testing "Decoding a single gene"
+    (is (-> (decode-chromosome [0 1 0 1]) (= "5")))
+    (is (-> (decode-chromosome [0 1 0 1 0 1]) (= "5"))))
+  (testing "Decoding multiple genes"
+    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 0 1 0]) (= "5 + 2"))))
+  (testing "Sequence shouldn't end with operator" 
+    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 1]) (= "5"))))) 
