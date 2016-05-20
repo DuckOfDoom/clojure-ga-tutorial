@@ -17,8 +17,11 @@
   "Calculate the result of our expression in string form.
   Converts infix to valid Clojure code."
   [infix-expresson]
-  (try ((from-string infix-expresson))
-       (catch Exception e (str "Caught Exception: " (.getMessage e)) Double/POSITIVE_INFINITY)))
+  (let [expr (try (from-string infix-expresson)
+                  (catch Exception e (str "Caught Exception: " (.getMessage e)) nil))]
+    (if (-> expr nil?)
+      Double/POSITIVE_INFINITY
+      (expr))))
 
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
