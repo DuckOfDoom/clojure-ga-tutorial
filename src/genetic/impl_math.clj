@@ -8,17 +8,20 @@
 (defn initial-values
   "Returns a vector of maps with all the initial chromosomes and fitnesses."
   [num-chromosomes chromosome-length target-value]
-  (repeatedly num-chromosomes #(hash-map :body (apply vector (random-chromosome chromosome-length))
-                                         :fitness default-fitness)))
+  (repeatedly num-chromosomes #(let [body (apply vector (random-chromosome chromosome-length))
+                                     fitness (calculate-fitness (-> body decode-chromosome calculate-expression) target-value)]
+                                 (hash-map :body  body
+                                           :fitness fitness))))
 
 (defn calculate-expression
   "Calculate the result of our expression in string form.
-   Converts infix to valid Clojure code."
+  Converts infix to valid Clojure code."
   [infix-expresson]
-  ((from-string infix-expresson)))
+  (try ((from-string infix-expresson))
+       (catch Exception e (str "Caught Exception: " (.getMessage e)) Double/POSITIVE_INFINITY)))
 
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
-  [bits target-value]
-  (let [result (calculate-expression (decode-chromosome bits))]
-    (1.0 / (Math/abs (result -)))))
+  [value target-value]
+  (1.0 / (Math/abs (- value target-value))))
+
