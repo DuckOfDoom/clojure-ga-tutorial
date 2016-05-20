@@ -21,4 +21,3 @@
     (is (-> (calculate-fitness 17 15) (= 0.5)))
     (is (-> (calculate-fitness 32 34) (= 0.5))) 
 ))
-    
