@@ -17,7 +17,7 @@
 (deftest decode-gene-test
   "Trying to decode a single gene"
   (testing "Decodes gene of 4 bits into a number."
-    (is (-> (decode-gene [0 1 0 1]) (= "5")))) 
+    (is (-> (decode-gene [0 1 0 1]) (= "5.0")))) 
   (testing "Decodes gene of 4 bits into an operator sign."
     (is (-> (decode-gene [1 1 0 1]) (= "*")))) 
   (testing "Returns nil if not enough bits"
@@ -30,9 +30,11 @@
 (deftest decode-chromosome-test
   "Trying to decode the whole chromosome"
   (testing "Decoding a single gene"
-    (is (-> (decode-chromosome [0 1 0 1]) (= "5")))
-    (is (-> (decode-chromosome [0 1 0 1 0 1]) (= "5"))))
+    (is (-> (decode-chromosome [0 1 0 1]) (= "5.0")))
+    (is (-> (decode-chromosome [0 1 0 1 0 1]) (= "5.0"))))
   (testing "Decoding multiple genes"
-    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 0 1 0]) (= "5 + 2"))))
+    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 0 1 0]) (= "5.0 + 2.0"))))
   (testing "Sequence shouldn't end with operator" 
-    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 1]) (= "5"))))) 
+    (is (-> (decode-chromosome [0 1 0 1  1 0 1 0  0 1]) (= "5.0"))))) 
+  (testing "Multiple operators or multiple numbers should be dropped"
+    (is (-> (decode-chromosome [0 1 0 1  0 1 0 1  1 0 1 0 1 0 1 0  0 0 1 0]) (= "5.0 + 2.0"))))

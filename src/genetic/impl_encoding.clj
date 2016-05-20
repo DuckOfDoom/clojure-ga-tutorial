@@ -37,16 +37,18 @@
       (-> decoded (>= 2r1010)) (operators decoded)
       ;; Else it's just a number
       :else
-      (str decoded))))
+      ;; We're adding .0 so we dont get Clojuire ratios in result of calculating our expressions
+      (str decoded ".0"))))
 
-(defn operator?
+(defn- operator?
   "Returns whether the character is an operator"
   [c]
   (some? (some #{c} (vals operators))))
 
-(defn to-expression
+(defn- to-expression
   "Converts a vector of strings to expression that we're going to feed to compiler later.
-  Removes trailing operators and joins with whitespaces."
+  Removes trailing operators and joins with whitespaces.
+  We're also adding a '.0' to each number so we don't get Clojure ratios in result"
   [input]
   (let [s (clojure.string/join " " input)]
     (if (-> s last str operator?)

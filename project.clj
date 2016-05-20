@@ -6,9 +6,5 @@
   :main genetic.core
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [seesaw "1.4.5"]
-  ;; Plugin for humate test output: https://github.com/pjstadig/humane-test-output
-                 [pjstadig/humane-test-output "0.8.0"]]
-  ;; Activates the above mentioned plugin
-  :injections [(require 'pjstadig.humane-test-output)
-               (pjstadig.humane-test-output/activate!)
-               (println "Humane Output Activated!")] )
+                 [rm-hull/infix "0.2.7"]])
+
