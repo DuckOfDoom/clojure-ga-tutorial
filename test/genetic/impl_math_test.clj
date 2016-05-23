@@ -1,4 +1,4 @@
-(ns genetic.impl-utils-test
+(ns genetic.impl-math-test
   (:require [clojure.test :refer :all]
             [genetic.impl :refer :all]))
 

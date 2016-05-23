@@ -8,7 +8,7 @@
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
   [value target-value]
-  (1.0 / (Math/abs (- value target-value))))
+  (/ 1.0 (Math/abs (- value target-value))))
 
 (defn calculate-expression
   "Calculate the result of our expression in string form.
