@@ -31,21 +31,27 @@
 
 (defn mutate
   "Mutates a random gene with some probability."
-  [chromosome prob]
-  (if (> prob (rand))
-    (let [i (rand-int (count chromosome))]
-      (assoc chromosome i (#(if (= % 1) 0 1) (nth chromosome i))))
-    chromosome))
+  [chromosome mutation-rate]
+  (apply vector (map #(if (< (rand) mutation-rate) (if (= % 1) 0 1) (identity %)) chromosome)))
 
 (defn select
   "Selects the most fit chromosome using roulette wheel selection.
   Accepts a vector of maps with :fitness keys"
-  [chromosomes]
-  (let [weights (apply vector (map #(:fitness %) chromosomes))
-        sum-weights (reduce + weights)
-        value (rand sum-weights)]
-    (loop [i 0
-           sum (first weights)]
-      (if (<= value sum) (get chromosomes i)
-        (recur (inc i) (+ sum (get weights (inc i))))))))
-
+  ([chromosomes]
+   (let [weights (apply vector (map #(:fitness %) chromosomes))
+          sum-weights (reduce + weights)
+          value (rand sum-weights)]
+     (loop [i 0
+            sum (first weights)]
+       (if (<= value sum) (get chromosomes i)
+         (recur (inc i) (+ sum (get weights (inc i))))))))
+  ([chromosomes n]
+   (loop [i 0 
+          current chromosomes
+          selected []]
+ ;;    (println str i " " n " " current " " selected)
+     (if (>= i n) 
+       selected
+       (let [x (select current)
+             xs (filterv #(not= (:chromosome x) (:chromosome %)) current)]
+         (recur (inc i) xs (conj selected x)))))))

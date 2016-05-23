@@ -14,12 +14,18 @@
 
 (deftest mutate-test
   (testing "Mutates!"
-    (is (#(or (= % [1 1]) (= % [0 0])) (mutate [1 0] 1))))
+    (is (-> (mutate [1 0] 1) (= [0 1]))))
   (testing "Doesnt mutate with 0 probability"
     (is (-> (mutate [1 0 1] 0) (= [1 0 1])))))
 
 (deftest select-test
-  (testing "Selects!"
-    (is (-> (:name (select [{:name "derp" :fitness 1} {:name "herp" :fitness 0}])) (= "derp")))
+  (testing "Selects single"
+    (is (-> (:name (select [{:name "derp" :fitness 1}
+                            {:name "herp" :fitness 0}])) (= "derp")))
+    (is (-> (:name (select [{:name "herp" :fitness 0}])) (= "herp")))
     (is (let [name (:name (select [{:name "derp" :fitness 1} {:name "herp" :fitness 0} {:name "whoa" :fitness 3}]))]
-          (or (= name "derp") (= name "whoa"))))))  
+          (or (= name "derp") (= name "whoa")))))
+  (testing "Selects multiple"
+    (is (-> (select [{:chromosome [1 0 1] :fitness 1} 
+                     {:chromosome [1 1 1] :fitness 0}
+                     {:chromosome [0 1 0]  :fitness 3}] 2) (= "derp")))))
