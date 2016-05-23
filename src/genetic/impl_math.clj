@@ -8,7 +8,10 @@
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
   [value target-value]
-  (/ 1.0 (Math/abs (- value target-value))))
+  ;; Let's say that chromosomes that give us < 1 answer are not fit at all
+  (if (and (>= 0 value) (>= 0 target-value))
+    (/ 1.0 (Math/abs (- value target-value)))
+    0))
 
 (defn calculate-expression
   "Calculate the result of our expression in string form.
@@ -20,10 +23,3 @@
       Double/POSITIVE_INFINITY
       (expr))))
 
-(defn initial-values
-  "Returns a vector of maps with all the initial chromosomes and fitnesses."
-  [num-chromosomes chromosome-length target-value]
-  (repeatedly num-chromosomes #(let [body (apply vector (random-chromosome chromosome-length))
-                                     fitness (calculate-fitness (-> body decode-chromosome calculate-expression) target-value)]
-                                 (hash-map :body  body
-                                           :fitness fitness))))

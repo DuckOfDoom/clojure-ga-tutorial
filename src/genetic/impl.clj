@@ -2,6 +2,16 @@
   (:require [clojure.pprint :refer [cl-format]]
             [infix.macros :refer [from-string]]))
 
+(load "impl_encoding")
+(load "impl_math")
+
+(defn initial-values
+  "Returns a vector of maps with all the initial chromosomes and fitnesses."
+  [num-chromosomes chromosome-length target-value]
+  (repeatedly num-chromosomes #(let [chromosome (apply vector (random-chromosome chromosome-length))
+                                     fitness (calculate-fitness (-> chromosome decode-chromosome calculate-expression) target-value)]
+                                 (hash-map :chromosome  chromosome
+                                           :fitness fitness))))
 (defn crossover 
   "Perform a crossover operation on two parent chromosomes on crossover-point.
   Returns a vector of 2 children."
@@ -27,5 +37,15 @@
       (assoc chromosome i (#(if (= % 1) 0 1) (nth chromosome i))))
     chromosome))
 
-(load "impl_encoding")
-(load "impl_math")
+(defn select
+  "Selects the most fit chromosome using roulette wheel selection.
+  Accepts a vector of maps with :fitness keys"
+  [chromosomes]
+  (let [weights (apply vector (map #(:fitness %) chromosomes))
+        sum-weights (reduce + weights)
+        value (rand sum-weights)]
+    (loop [i 0
+           sum (first weights)]
+      (if (<= value sum) (get chromosomes i)
+        (recur (inc i) (+ sum (get weights (inc i))))))))
+
