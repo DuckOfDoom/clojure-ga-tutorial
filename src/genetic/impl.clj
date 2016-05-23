@@ -3,4 +3,4 @@
             [infix.macros :refer [from-string]]))
 
 (load "impl_encoding")
-(load "impl_utils")
+(load "impl_math")
