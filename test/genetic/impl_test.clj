@@ -1,5 +1,6 @@
 (ns genetic.impl-test
   (:require [clojure.test :refer :all]
+            [clojure.set :refer [difference]]
             [genetic.impl :refer :all]))
 
 (deftest crossover-test
@@ -26,6 +27,6 @@
     (is (let [name (:name (select [{:name "derp" :fitness 1} {:name "herp" :fitness 0} {:name "whoa" :fitness 3}]))]
           (or (= name "derp") (= name "whoa")))))
   (testing "Selects multiple"
-    (is (-> (select [{:chromosome [1 0 1] :fitness 1} 
-                     {:chromosome [1 1 1] :fitness 0}
-                     {:chromosome [0 1 0]  :fitness 3}] 2) (= "derp")))))
+    (is (-> (difference #{[1 0 1] [0 1 0]} (set (map :chromosome (select [{:chromosome [1 0 1] :fitness 1} 
+                                                                          {:chromosome [1 1 1] :fitness 0}
+                                                                          {:chromosome [0 1 0] :fitness 3}] 2)))) empty?))))
