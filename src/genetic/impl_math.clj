@@ -8,10 +8,7 @@
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
   [value target-value]
-  ;; Let's say that chromosomes that give us < 1 answer are not fit at all
-  (if (and (>= 0 value) (>= 0 target-value))
-    (/ 1.0 (Math/abs (- value target-value)))
-    0))
+    (/ 1.0 (Math/abs (- value target-value))))
 
 (defn calculate-expression
   "Calculate the result of our expression in string form.
@@ -21,5 +18,6 @@
                   (catch Exception e (str "Caught Exception: " (.getMessage e)) nil))]
     (if (-> expr nil?)
       Double/POSITIVE_INFINITY
-      (expr))))
+      (try (expr)
+           (catch ArithmeticException e (str "Division By Zero!") Double/POSITIVE_INFINITY)))))
 

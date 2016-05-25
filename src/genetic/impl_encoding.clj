@@ -73,3 +73,8 @@
         (-> is-operator (not= was-operator)) (recur left is-operator (conj decoded current))
         :else 
         (recur left was-operator decoded)))))
+
+(defn add-expression
+  "Adds a decoded expression to a map with :chromosome key"
+  [m]
+  (assoc m :expression (decode-chromosome (:chromosome m))))

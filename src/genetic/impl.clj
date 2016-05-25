@@ -10,7 +10,8 @@
   [num-chromosomes chromosome-length target-value]
   (repeatedly num-chromosomes #(let [chromosome (apply vector (random-chromosome chromosome-length))
                                      fitness (calculate-fitness (-> chromosome decode-chromosome calculate-expression) target-value)]
-                                 (hash-map :chromosome  chromosome
+                                 (hash-map :chromosome chromosome
+                                           :expression (decode-chromosome chromosome)
                                            :fitness fitness))))
 (defn crossover 
   "Perform a crossover operation on two parent chromosomes on crossover-point.
@@ -36,11 +37,12 @@
 
 (defn select
   "Selects the most fit chromosome using roulette wheel selection.
-  Accepts a vector of maps with :fitness keys"
+  Accepts a vector of maps with :fitness keys, 
+  returns a vector of maps or a single map."
   ([chromosomes]
    (let [weights (apply vector (map #(:fitness %) chromosomes))
-          sum-weights (reduce + weights)
-          value (rand sum-weights)]
+         sum-weights (reduce + weights)
+         value (rand sum-weights)]
      (loop [i 0
             sum (first weights)]
        (if (<= value sum) (get chromosomes i)
@@ -49,7 +51,6 @@
    (loop [i 0 
           current chromosomes
           selected []]
- ;;    (println str i " " n " " current " " selected)
      (if (>= i n) 
        selected
        (let [x (select current)
