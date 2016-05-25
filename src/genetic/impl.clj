@@ -40,7 +40,7 @@
   Accepts a vector of maps with :fitness keys, 
   returns a vector of maps or a single map."
   ([chromosomes]
-   (let [weights (apply vector (map #(:fitness %) chromosomes))
+   (let [weights (mapv #(:fitness %) chromosomes)
          sum-weights (reduce + weights)
          value (rand sum-weights)]
      (loop [i 0
@@ -51,7 +51,7 @@
    (loop [i 0 
           current chromosomes
           selected []]
-     (if (>= i n) 
+     (if (or (>= i n) (empty? current)) 
        selected
        (let [x (select current)
              xs (filterv #(not= (:chromosome x) (:chromosome %)) current)]
