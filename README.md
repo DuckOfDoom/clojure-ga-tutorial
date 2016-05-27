@@ -1,14 +1,14 @@
-# genetic
+# genetic-tutorial
 
-A Clojure library designed to ... well, that part is up to you.
+An implementation of Genetic Algorithms tutorial.
+http://www.ai-junkie.com/ga/intro/gat1.html
 
 ## Usage
 
-FIXME
+You can use it in Leiningen.
 
-## License
-
-Copyright © 2016 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+```
+lein run <target value>
+lein run <target value> <chromosome-length>
+lein run <target value> <chromosome length> <population size> <crossover rate> <mutation rate> [max generations]
+```
