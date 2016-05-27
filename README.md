@@ -1,4 +1,4 @@
-# genetic-tutorial
+# clojure-ga-tutorial
 
 An implementation of Genetic Algorithms tutorial.
 http://www.ai-junkie.com/ga/intro/gat1.html
