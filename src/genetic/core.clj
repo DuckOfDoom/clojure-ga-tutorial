@@ -4,21 +4,33 @@
   (:gen-class
     :main main))
 
+(def population-size 100)
+(def chromosome-length 100)
+(def mutation-rate 0.007)
+(def crossover-rate 0.7)
+(def target 0)
+(def max-generations 0)
+
 (defn- to-map
   [c]
   (assoc {} :chromosome c :expression "UNKNOWN" :fitness "UNKNOWN"))
 
 (defn- set-initial-values
   [args]
-  (let [m (zipmap [:ps :cl :mr :cr :target :mg] args)] 
+  (let [m 
+        (cond (<= (count args) 0) {}
+              (= (count args) 1) (zipmap [:target-value] (map read-string args)) 
+              (= (count args) 2) (zipmap [:target-value :chromosome-length ] (map read-string args)) 
+              (<= 5 (count args) 6) (zipmap [:target-value :chromosome-length :population-size :crossover-rate :mutation-rate :max-generations] args)
+              :else (throw (Exception. "Invalid args count. See 'help' for available options."))) ]
     (do 
-      (def population-size (get m :ps 100))
-      (when (odd? population-size) ( throw (Exception. "Population Size should be an odd number")))
-      (def chromosome-length (get m :cl 30))
-      (def mutation-rate (get m :mr 0.007))
-      (def crossover-rate (get m :cr 0.7))
-      (def target (get m :target 0))
-      (def max-generations (get :mg m 100))
+      (def population-size (get m :population-size population-size))
+      (when (odd? population-size) (throw (Exception. "Population Size should be an odd number")))
+      (def chromosome-length (get m :chromosome-length chromosome-length))
+      (def mutation-rate (get m :mutation-rate mutation-rate))
+      (def crossover-rate (get m :crossover-rate crossover-rate))
+      (def target (get m :target-value target))
+      (def max-generations (get :mg m max-generations))
       (def generation 0)
       (def state (impl/initial-values population-size chromosome-length target)))))
 
@@ -57,8 +69,8 @@
             c1 (-> selected first :chromosome)
             c2 (-> selected second :chromosome)
             new-chromosomes (-> selected 
-                            perform-crossover
-                            perform-mutation)]
+                                perform-crossover
+                                perform-mutation)]
         (recur (filterv #(and (not= (:chromosome %) c1) (not= (:chromosome %) c2)) old-generation)
                (into new-generation (mapv calculate-fitness new-chromosomes)))))))
 
@@ -79,28 +91,43 @@
 (defn -main
   [& args]
   (let [a *command-line-args*]
-    (if (= (first a) "help")
-      (println "Usage:\n"
-               "  lein run <population size> <chromosome length> <mutation rate> <crossover rate> <target value> [max generations]"
-               "  lein run <target value>")) 
-    (do
-;;      (clear-dump)
-      (set-initial-values *command-line-args*)
-      (println 
-        "Initializing with values:\n"
-        "  Population Size:" population-size "\n"
-        "  Chromosome Length:" chromosome-length "\n"
-        "  Mutation Rate:" mutation-rate "\n"
-        "  Crossover Rate:" crossover-rate "\n"
-        "  Max Generations:" max-generations (if (<= max-generations 0) " (Unlimited) " "") "\n"
-        "  Target Value:" target)
-      (loop 
-        []
-;;        (dump-state)
-        (step)
-        (def generation (inc generation))
-        (let [bs (find-best-solution)]
-          (println "Generation #" generation "\n" "Best Solution: " bs)
-          (when (< generation max-generations)
-            (recur))))
-      )))
+    (if (or (empty? a) (= (first a) "help"))
+      (println "Usage (using leiningen):\n"
+               "  lein run <target value> \n"
+               "  lein run <target value> <chromosome-length> \n"
+               "  lein run <target value> <chromosome length> <population size> <crossover rate> <mutation rate> [max generations]")      
+      (do
+        ;;      (clear-dump)
+        (set-initial-values a)
+        (println 
+          "Initialized with values:\n"
+          "  Target Value:" target "\n"
+          "  Chromosome Length:" chromosome-length "\n"
+          "  Population Size:" population-size "\n"
+          "  Mutation Rate:" mutation-rate "\n"
+          "  Crossover Rate:" crossover-rate "\n"
+          "  Max Generations:" max-generations (if (<= max-generations 0) " (Unlimited) " "") "\n"
+          "Press Enter to continue...")
+        (read-line)
+        (loop 
+          []
+          ;;        (dump-state)
+          (step)
+          (def generation (inc generation))
+          (let [bs (find-best-solution)]
+            (cond
+              (or 
+                ;; Max Generations reached if max-generations stated
+                (and (> max-generations 0) (>= generation max-generations))
+                ;; Found solution with infinite fitness - perfect match
+                (>= (:fitness bs) Double/POSITIVE_INFINITY))
+              (println 
+                (format "Algorithm finished on %d-th generation." generation) "\n"
+                "Best found solution is: " (:expression bs) " = " (impl/calculate-expression (:expression bs)) "\n"
+                "With fitness: " (:fitness bs))
+              :else 
+              (do 
+                (println "Generation #" generation "\n" "Best Solution: " (:fitness bs) "'" (:expression bs) "'")
+                (recur))
+              )))
+        ))))
