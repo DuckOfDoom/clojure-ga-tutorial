@@ -18,10 +18,7 @@
 (defn- set-initial-values
   [args]
   (let [m 
-        (cond (<= (count args) 0) {}
-              (= (count args) 1) (zipmap [:target-value] (map read-string args)) 
-              (= (count args) 2) (zipmap [:target-value :chromosome-length ] (map read-string args)) 
-              (<= 5 (count args) 6) (zipmap [:target-value :chromosome-length :population-size :crossover-rate :mutation-rate :max-generations] args)
+        (cond (<= 1 (count args) 6) (zipmap [:target-value :chromosome-length :population-size :crossover-rate :mutation-rate :max-generations] (map read-string args))
               :else (throw (Exception. "Invalid args count. See 'help' for available options."))) ]
     (do 
       (def population-size (get m :population-size population-size))
@@ -30,7 +27,7 @@
       (def mutation-rate (get m :mutation-rate mutation-rate))
       (def crossover-rate (get m :crossover-rate crossover-rate))
       (def target (get m :target-value target))
-      (def max-generations (get :mg m max-generations))
+      (def max-generations (get m :max-generations max-generations))
       (def generation 0)
       (def state (impl/initial-values population-size chromosome-length target)))))
 
@@ -93,9 +90,7 @@
   (let [a *command-line-args*]
     (if (or (empty? a) (= (first a) "help"))
       (println "Usage (using leiningen):\n"
-               "  lein run <target value> \n"
-               "  lein run <target value> <chromosome-length> \n"
-               "  lein run <target value> <chromosome length> <population size> <crossover rate> <mutation rate> [max generations]")      
+               "  lein run <target value> [chromosome length] [population size] [crossover rate] [mutation rate] [max generations]")      
       (do
         ;;      (clear-dump)
         (set-initial-values a)
@@ -104,8 +99,8 @@
           "  Target Value:" target "\n"
           "  Chromosome Length:" chromosome-length "\n"
           "  Population Size:" population-size "\n"
-          "  Mutation Rate:" mutation-rate "\n"
           "  Crossover Rate:" crossover-rate "\n"
+          "  Mutation Rate:" mutation-rate "\n"
           "  Max Generations:" max-generations (if (<= max-generations 0) " (Unlimited) " "") "\n"
           "Press Enter to continue...")
         (read-line)
