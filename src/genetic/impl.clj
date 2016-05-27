@@ -33,7 +33,7 @@
 (defn mutate
   "Mutates a random gene with some probability."
   [chromosome mutation-rate]
-  (apply vector (map #(if (< (rand) mutation-rate) (if (= % 1) 0 1) (identity %)) chromosome)))
+  (mapv #(if (< (rand) mutation-rate) (if (= % 1) 0 1) (identity %)) chromosome))
 
 (defn select
   "Selects the most fit chromosome using roulette wheel selection.
