@@ -56,3 +56,17 @@
        (let [x (select current)
              xs (filterv #(not= (:chromosome x) (:chromosome %)) current)]
          (recur (inc i) xs (conj selected x)))))))
+
+(defn remove-parents
+  [coll p1 p2]
+  (loop [remaining coll
+         is-first-removed false
+         is-second-removed false
+         result []]
+    (let [x (first remaining)
+          xs (rest remaining)]
+      (cond 
+        (or (nil? x) (and is-first-removed is-second-removed)) (into result remaining)
+        (and (not is-first-removed) (= (:chromosome x) (:chromosome p1))) (recur xs true is-second-removed result)
+        (and (not is-second-removed) (= (:chromosome x) (:chromosome p2))) (recur xs is-first-removed true result)
+        :else (recur xs is-first-removed is-second-removed (conj result x))))))

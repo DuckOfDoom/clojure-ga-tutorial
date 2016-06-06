@@ -30,3 +30,12 @@
     (is (-> (difference #{[1 0 1] [0 1 0]} (set (map :chromosome (select [{:chromosome [1 0 1] :fitness 1} 
                                                                           {:chromosome [1 1 1] :fitness 0}
                                                                           {:chromosome [0 1 0] :fitness 3}] 2)))) empty?))))
+(deftest remove-parents-test
+  (testing "Removes two parents."
+    (is (-> (remove-parents [{:chromosome [1 0 1]}
+                             {:chromosome [1 1 0]}
+                             {:chromosome [0 0 0]} 
+                             {:chromosome [0 1 0]}
+                             {:chromosome [1 0 0]}
+                             {:chromosome [0 1 0]}] {:chromosome [1 1 0]} {:chromosome [0 1 0]})
+            (= [{:chromosome [1 0 1]} {:chromosome [0 0 0]} {:chromosome [1 0 0]} {:chromosome [0 1 0]}])))))
