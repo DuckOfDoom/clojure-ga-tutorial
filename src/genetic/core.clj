@@ -63,12 +63,11 @@
     (if (empty? old-generation) 
       (def state new-generation)
       (let [selected (impl/select old-generation 2)
-            c1 (-> selected first :chromosome)
-            c2 (-> selected second :chromosome)
+            [c1 c2] selected
             new-chromosomes (-> selected 
                                 perform-crossover
                                 perform-mutation)]
-        (recur (filterv #(and (not= (:chromosome %) c1) (not= (:chromosome %) c2)) old-generation)
+        (recur (impl/remove-parents old-generation c1 c2)
                (into new-generation (mapv calculate-fitness new-chromosomes)))))))
 
 (defn- find-best-solution
@@ -108,6 +107,7 @@
           []
           ;;        (dump-state)
           (step)
+;;          (println (count state))
           (def generation (inc generation))
           (let [bs (find-best-solution)]
             (cond

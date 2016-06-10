@@ -5,14 +5,25 @@
 (load "impl_encoding")
 (load "impl_math")
 
+(defn- filterv-once
+  "Same as filterv but stops after first match"
+  [pred coll]
+  (loop [x (first coll)
+         xs (rest coll)
+         result []]
+    (cond (nil? x) result
+          (pred x) (recur (first xs) (rest xs) (conj result x))
+          :else (into result xs))))
+
 (defn initial-values
   "Returns a vector of maps with all the initial chromosomes and fitnesses."
   [num-chromosomes chromosome-length target-value]
-  (repeatedly num-chromosomes #(let [chromosome (apply vector (random-chromosome chromosome-length))
-                                     fitness (calculate-fitness (-> chromosome decode-chromosome calculate-expression) target-value)]
-                                 (hash-map :chromosome chromosome
-                                           :expression (decode-chromosome chromosome)
-                                           :fitness fitness))))
+  (vec (repeatedly num-chromosomes #(let [chromosome (apply vector (random-chromosome chromosome-length))
+                                          fitness (calculate-fitness (-> chromosome decode-chromosome calculate-expression) target-value)]
+                                      (hash-map :chromosome chromosome
+                                                :expression (decode-chromosome chromosome)
+                                                :fitness fitness)))))
+
 (defn crossover 
   "Perform a crossover operation on two parent chromosomes on crossover-point.
   Returns a vector of 2 children."
@@ -45,7 +56,8 @@
          value (rand sum-weights)]
      (loop [i 0
             sum (first weights)]
-       (if (<= value sum) (get chromosomes i)
+       (if (<= value sum) 
+         (get chromosomes i)
          (recur (inc i) (+ sum (get weights (inc i))))))))
   ([chromosomes n]
    (loop [i 0 
@@ -54,10 +66,11 @@
      (if (or (>= i n) (empty? current)) 
        selected
        (let [x (select current)
-             xs (filterv #(not= (:chromosome x) (:chromosome %)) current)]
+             xs (filterv-once #(not= (:chromosome x) (:chromosome %)) current)]
          (recur (inc i) xs (conj selected x)))))))
 
 (defn remove-parents
+  "Removes exactly two chromosomes from the population."
   [coll p1 p2]
   (loop [remaining coll
          is-first-removed false
@@ -70,3 +83,4 @@
         (and (not is-first-removed) (= (:chromosome x) (:chromosome p1))) (recur xs true is-second-removed result)
         (and (not is-second-removed) (= (:chromosome x) (:chromosome p2))) (recur xs is-first-removed true result)
         :else (recur xs is-first-removed is-second-removed (conj result x))))))
+
