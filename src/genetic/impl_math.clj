@@ -5,6 +5,11 @@
   [n]
   (take n (repeatedly #(rand-int 2))))
 
+(defn calculate-average-fitness
+  "Calculates average fitness across the population"
+  [state]
+  (/ (reduce + (map :fitness state)) (count state)))
+
 (defn calculate-fitness
   "Calculate fitness for our chromosome"
   [value target-value]

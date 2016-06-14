@@ -122,7 +122,9 @@
                 "With fitness: " (:fitness bs))
               :else 
               (do 
-                (println "Generation #" generation "\n" "Best Solution: " (:fitness bs) "'" (:expression bs) "'")
+                (println "Generation #" generation "\n"
+                         "Best Solution: " (:fitness bs) "=> '" (:expression bs) "' \n" 
+                         "Average Fitness: " (impl/calculate-average-fitness state))
                 (recur))
               )))
         ))))
