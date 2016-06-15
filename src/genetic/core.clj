@@ -106,8 +106,8 @@
         (loop 
           []
           ;;        (dump-state)
-          (step)
-;;          (println (count state))
+          (def elapsed-time (with-out-str (time (step))))
+          ;;          (println (count state))
           (def generation (inc generation))
           (let [bs (find-best-solution)]
             (cond
@@ -124,7 +124,8 @@
               (do 
                 (println "Generation #" generation "\n"
                          "Best Solution: " (:fitness bs) "=> '" (:expression bs) "' \n" 
-                         "Average Fitness: " (impl/calculate-average-fitness state))
+                         "Average Fitness: " (impl/calculate-average-fitness state) "\n"
+                          elapsed-time)
                 (recur))
               )))
         ))))
